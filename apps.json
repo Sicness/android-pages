@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "id": "react2players",
+      "package": "ru.darklogic.react2players",
+      "stores": {
+        "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.react2players",
+        "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.react2players"
+      },
+      "content": {
+        "ru": {
+          "name": "Реакция 2 Игрока",
+          "tagline": "Два игрока. Один телефон. Молниеносные дуэли на реакцию.",
+          "description": "Экран делится пополам — по игроку с каждой стороны — и вы соревнуетесь в быстрых мини-играх на реакцию. Нажал первым после сигнала — победа. Нажал слишком рано — поражение.",
+          "screenshots": { "count": 6, "width": 720, "height": 1280 }
+        },
+        "en": {
+          "name": "Reaction 2 Players",
+          "tagline": "Two players. One phone. Split-second reaction duels.",
+          "description": "The screen splits in half, one player sits on each side, and you race each other through fast reaction mini-games. Tap first after the signal — you win. Tap too early — you lose.",
+          "screenshots": { "count": 6, "width": 720, "height": 1280 }
+        }
+      }
+    },
+    {
+      "id": "mds",
+      "package": "ru.darklogic.mds",
+      "stores": {
+        "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.mds",
+        "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.mds"
+      },
+      "content": {
+        "ru": {
+          "name": "Модель для Сборки",
+          "tagline": "Аудиокниги: фантастика под музыку.",
+          "description": "«Модель для сборки» — культовая радиопередача: фантастические книги читает профессиональный чтец под хорошо подобранную музыку. Приложение — каталог крупнейшего архива mds-club.ru.",
+          "screenshots": { "count": 6, "width": 800, "height": 1280 }
+        }
+      }
+    }
+  ]
+}

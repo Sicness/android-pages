@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Наши приложения</title>
+<meta name="description" content="Приложения для Android от тех же разработчиков.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #ffffff;
+    --text: #1b1b19;
+    --muted: #63625d;
+    --line: #dddbd3;
+    --button: #1b1b19;
+    --button-text: #ffffff;
+    --focus: #2f6fd0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131312;
+      --card: #1e1e1c;
+      --text: #f0efe9;
+      --muted: #a3a29b;
+      --line: #34332f;
+      --button: #f0efe9;
+      --button-text: #131312;
+      --focus: #7fb0f5;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 560px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 24px; line-height: 1.2; font-weight: 650; margin: 0 0 20px; text-wrap: balance; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .icon { width: 56px; height: 56px; border-radius: 13px; flex: none; }
+  h2 { font-size: 18px; line-height: 1.25; font-weight: 650; margin: 0 0 2px; }
+  .tagline { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.35; }
+  .description { margin: 0 0 14px; font-size: 15px; }
+  /* Лента выходит за поля карточки, чтобы было видно: её можно листать. */
+  .shots {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0 -16px 14px;
+    padding: 2px 16px;
+    scrollbar-width: none;
+  }
+  .shots::-webkit-scrollbar { display: none; }
+  .shot {
+    flex: none;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg);
+    cursor: zoom-in;
+    line-height: 0;
+  }
+  .shot img { height: 200px; width: auto; display: block; }
+  .stores { display: flex; flex-direction: column; gap: 8px; }
+  .store {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--button);
+    color: var(--button-text);
+  }
+  .store + .store { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .empty { color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.96);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    touch-action: pan-y;
+  }
+  .viewer.open { display: flex; }
+  .viewer img { max-width: 100%; max-height: calc(100% - 96px); object-fit: contain; }
+  .viewer button {
+    position: absolute;
+    border: 0;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .viewer .close { top: 12px; right: 12px; }
+  .viewer .prev { left: 8px; top: 50%; margin-top: -22px; }
+  .viewer .next { right: 8px; top: 50%; margin-top: -22px; }
+  .viewer .count { position: absolute; bottom: 16px; color: #d6d5cf; font-size: 14px; }
+  body.locked { overflow: hidden; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Наши приложения</h1>
+  <div id="list"></div>
+  <noscript>
+    <p><a href="https://play.google.com/store/apps/details?id=ru.darklogic.react2players">Реакция 2 Игрока</a></p>
+    <p><a href="https://play.google.com/store/apps/details?id=ru.darklogic.mds">Модель для Сборки</a></p>
+  </noscript>
+</main>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Скриншот">
+  <img id="viewer-img" alt="">
+  <button class="close" id="viewer-close" type="button">&#215;</button>
+  <button class="prev" id="viewer-prev" type="button">&#8249;</button>
+  <button class="next" id="viewer-next" type="button">&#8250;</button>
+  <div class="count" id="viewer-count"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Идентификатор веб-потока Google Analytics вида G-XXXXXXX. Пока пусто — счётчик не грузится.
+  var GA_ID = '';
+
+  var TEXT = {
+    ru: {
+      title: 'Наши приложения',
+      description: 'Приложения для Android от тех же разработчиков.',
+      gp: 'Установить из Google Play',
+      rustore: 'Установить из RuStore',
+      empty: 'Скоро здесь появятся новые приложения.',
+      failed: 'Не удалось загрузить список. Обновите страницу.',
+      shot: 'Скриншот',
+      close: 'Закрыть',
+      prev: 'Предыдущий',
+      next: 'Следующий'
+    },
+    en: {
+      title: 'Our apps',
+      description: 'Android apps from the same developers.',
+      gp: 'Get it on Google Play',
+      rustore: 'Get it on RuStore',
+      empty: 'More apps are coming soon.',
+      failed: 'Couldn’t load the list. Reload the page.',
+      shot: 'Screenshot',
+      close: 'Close',
+      prev: 'Previous',
+      next: 'Next'
+    }
+  };
+
+  var params = new URLSearchParams(location.search);
+  var source = (params.get('utm_source') || '').toLowerCase();
+  var store = (params.get('store') || '').toLowerCase();
+  if (store !== 'gp' && store !== 'rustore') store = '';
+  var lang = pickLang(params.get('lang'));
+  var t = TEXT[lang];
+
+  /*
+   * Язык присылает приложение: оно знает системные языки точнее браузера. Без
+   * параметра правило то же, что в приложениях: русский где угодно в списке
+   * языков либо украинский, белорусский или казахский первым.
+   */
+  function pickLang(param) {
+    if (param === 'ru' || param === 'en') return param;
+    var list = (navigator.languages && navigator.languages.length)
+      ? navigator.languages : [navigator.language || 'en'];
+    var codes = list.map(function (l) { return String(l).toLowerCase().split('-')[0]; });
+    if (codes.indexOf('ru') !== -1) return 'ru';
+    if (['uk', 'be', 'kk'].indexOf(codes[0]) !== -1) return 'ru';
+    return 'en';
+  }
+
+  /*
+   * Кнопки сторов. Пришедшим из стора показываем только его: так велят правила
+   * Google Play, и человеку не нужен магазин, которого у него нет. Без параметра
+   * русскоязычным — оба, остальным — только Google Play.
+   */
+  function storesFor(app) {
+    var wanted = store ? [store] : (lang === 'ru' ? ['gp', 'rustore'] : ['gp']);
+    var res = wanted.filter(function (s) { return app.stores[s]; });
+    return res.length ? res : Object.keys(app.stores).slice(0, 1);
+  }
+
+  function storeUrl(app, s) {
+    var url = app.stores[s];
+    if (s !== 'gp') return url;
+    // По referrer установку можно отнести к приложению, из которого пришли.
+    var referrer = source
+      ? 'utm_source=' + source + '&utm_medium=apps_page'
+      : 'utm_source=apps_page&utm_medium=direct';
+    return url + '&referrer=' + encodeURIComponent(referrer);
+  }
+
+  function track(name, data) {
+    if (window.gtag) window.gtag('event', name, data);
+  }
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text) node.textContent = text;
+    return node;
+  }
+
+  function card(app) {
+    var c = app.content[lang];
+    var base = 'assets/' + app.id + '/';
+    var node = el('section', 'card');
+
+    var head = el('div', 'head');
+    var icon = el('img', 'icon');
+    icon.src = base + 'icon.webp';
+    icon.alt = '';
+    icon.width = 56;
+    icon.height = 56;
+    var titles = el('div');
+    titles.appendChild(el('h2', '', c.name));
+    titles.appendChild(el('p', 'tagline', c.tagline));
+    head.appendChild(icon);
+    head.appendChild(titles);
+    node.appendChild(head);
+
+    node.appendChild(el('p', 'description', c.description));
+
+    var shots = el('div', 'shots');
+    var n = c.screenshots.count;
+    for (var i = 1; i <= n; i++) {
+      (function (index) {
+        var button = el('button', 'shot');
+        button.type = 'button';
+        button.setAttribute('aria-label', t.shot + ' ' + index + ' / ' + n + ', ' + c.name);
+        var img = el('img');
+        img.src = base + lang + '/' + index + '-thumb.webp';
+        img.alt = '';
+        img.loading = 'lazy';
+        img.height = 200;
+        img.width = Math.round(200 * c.screenshots.width / c.screenshots.height);
+        button.appendChild(img);
+        button.addEventListener('click', function () {
+          viewer.open(app.id, base + lang + '/', n, index, c.name);
+        });
+        shots.appendChild(button);
+      })(i);
+    }
+    node.appendChild(shots);
+
+    var stores = el('div', 'stores');
+    storesFor(app).forEach(function (s) {
+      var link = el('a', 'store', t[s]);
+      link.href = storeUrl(app, s);
+      link.addEventListener('click', function () {
+        track('store_click', { app_id: app.id, store: s });
+      });
+      stores.appendChild(link);
+    });
+    node.appendChild(stores);
+    return node;
+  }
+
+  /*
+   * Раскрытый скриншот. Открытие кладёт запись в историю, чтобы системная кнопка
+   * «Назад» закрывала картинку, а не уводила со страницы обратно в приложение.
+   */
+  var viewer = (function () {
+    var root = document.getElementById('viewer');
+    var img = document.getElementById('viewer-img');
+    var count = document.getElementById('viewer-count');
+    var closeBtn = document.getElementById('viewer-close');
+    var prevBtn = document.getElementById('viewer-prev');
+    var nextBtn = document.getElementById('viewer-next');
+    var state = null;
+    var opener = null;
+    var touchX = null;
+
+    function show() {
+      img.src = state.base + state.index + '.webp';
+      img.alt = t.shot + ' ' + state.index + ' / ' + state.total + ', ' + state.name;
+      count.textContent = state.index + ' / ' + state.total;
+      var single = state.total < 2;
+      prevBtn.hidden = single;
+      nextBtn.hidden = single;
+    }
+
+    function step(delta) {
+      if (!state) return;
+      state.index = (state.index - 1 + delta + state.total) % state.total + 1;
+      show();
+    }
+
+    function hide() {
+      if (!state) return;
+      state = null;
+      root.classList.remove('open');
+      document.body.classList.remove('locked');
+      img.removeAttribute('src');
+      if (opener) opener.focus();
+    }
+
+    function close() {
+      if (state) history.back();
+    }
+
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', function () { step(-1); });
+    nextBtn.addEventListener('click', function () { step(1); });
+    root.addEventListener('click', function (e) { if (e.target === root) close(); });
+    window.addEventListener('popstate', hide);
+    document.addEventListener('keydown', function (e) {
+      if (!state) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') step(-1);
+      else if (e.key === 'ArrowRight') step(1);
+    });
+    root.addEventListener('touchstart', function (e) {
+      touchX = e.touches.length === 1 ? e.touches[0].clientX : null;
+    }, { passive: true });
+    root.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+    }, { passive: true });
+
+    return {
+      open: function (appId, base, total, index, name) {
+        opener = document.activeElement;
+        state = { base: base, total: total, index: index, name: name };
+        closeBtn.setAttribute('aria-label', t.close);
+        prevBtn.setAttribute('aria-label', t.prev);
+        nextBtn.setAttribute('aria-label', t.next);
+        root.setAttribute('aria-label', t.shot);
+        show();
+        root.classList.add('open');
+        document.body.classList.add('locked');
+        history.pushState({ viewer: true }, '');
+        closeBtn.focus();
+        track('screenshot_open', { app_id: appId, index: index });
+      }
+    };
+  })();
+
+  function render(data) {
+    var list = document.getElementById('list');
+    var apps = data.apps.filter(function (app) {
+      return app.content[lang] && app.id !== source;
+    });
+    if (!apps.length) {
+      list.appendChild(el('p', 'empty', t.empty));
+      return;
+    }
+    apps.forEach(function (app) { list.appendChild(card(app)); });
+  }
+
+  function startAnalytics() {
+    if (!GA_ID) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('set', {
+      from_app: source || 'none',
+      page_lang: lang,
+      store_ctx: store || 'none'
+    });
+    window.gtag('config', GA_ID);
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(script);
+  }
+
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  document.getElementById('title').textContent = t.title;
+  document.querySelector('meta[name="description"]').setAttribute('content', t.description);
+  startAnalytics();
+
+  fetch('apps.json')
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(render)
+    .catch(function () {
+      document.getElementById('list').appendChild(el('p', 'empty', t.failed));
+    });
+})();
+</script>
+</body>
+</html>
