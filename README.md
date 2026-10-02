@@ -1,3 +1,3 @@
 # android-pages
 
-Static site published with GitHub Pages.
+Static site behind https://android.darklogic.ru/.
