@@ -373,7 +373,13 @@
       list.appendChild(el('p', 'empty', t.empty));
       return;
     }
+    // Порядок задаёт priority, а не место в файле: 1 — первым. Без priority — в конец.
+    apps.sort(function (a, b) { return rank(a) - rank(b); });
     apps.forEach(function (app) { list.appendChild(card(app)); });
+  }
+
+  function rank(app) {
+    return typeof app.priority === 'number' ? app.priority : Infinity;
   }
 
   function startAnalytics() {

@@ -2,8 +2,26 @@
   "version": 1,
   "apps": [
     {
+      "id": "mds",
+      "package": "ru.darklogic.mds",
+      "priority": 1,
+      "stores": {
+        "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.mds",
+        "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.mds"
+      },
+      "content": {
+        "ru": {
+          "name": "Модель для Сборки",
+          "tagline": "Аудиокниги: фантастика под музыку.",
+          "description": "«Модель для сборки» — культовая радиопередача: фантастические книги читает профессиональный чтец под хорошо подобранную музыку. Приложение — каталог крупнейшего архива mds-club.ru.",
+          "screenshots": { "count": 6, "width": 800, "height": 1280 }
+        }
+      }
+    },
+    {
       "id": "react2players",
       "package": "ru.darklogic.react2players",
+      "priority": 2,
       "stores": {
         "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.react2players",
         "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.react2players"
@@ -20,22 +38,6 @@
           "tagline": "Two players. One phone. Split-second reaction duels.",
           "description": "The screen splits in half, one player sits on each side, and you race each other through fast reaction mini-games. Tap first after the signal — you win. Tap too early — you lose.",
           "screenshots": { "count": 6, "width": 720, "height": 1280 }
-        }
-      }
-    },
-    {
-      "id": "mds",
-      "package": "ru.darklogic.mds",
-      "stores": {
-        "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.mds",
-        "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.mds"
-      },
-      "content": {
-        "ru": {
-          "name": "Модель для Сборки",
-          "tagline": "Аудиокниги: фантастика под музыку.",
-          "description": "«Модель для сборки» — культовая радиопередача: фантастические книги читает профессиональный чтец под хорошо подобранную музыку. Приложение — каталог крупнейшего архива mds-club.ru.",
-          "screenshots": { "count": 6, "width": 800, "height": 1280 }
         }
       }
     }
