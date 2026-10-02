@@ -73,19 +73,17 @@
     line-height: 0;
   }
   .shot img { height: 200px; width: auto; display: block; }
-  .stores { display: flex; flex-direction: column; gap: 8px; }
-  .store {
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: var(--button);
-    color: var(--button-text);
-  }
-  .store + .store { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  /*
+   * Официальные бейджи сторов в одну строку. Высота у них общая: Google Play
+   * требует, чтобы его бейдж был не меньше соседних. На узком экране оба
+   * уменьшаются вместе: 78px — поля страницы и карточки с промежутком, 6.14 —
+   * сумма пропорций двух бейджей.
+   */
+  .stores { display: flex; gap: 12px; --badge: min(44px, calc((100vw - 78px) / 6.14)); }
+  .store { display: block; border-radius: 6px; line-height: 0; }
+  /* Google Play всегда у правого края: до него ближе тянуться большим пальцем. */
+  .store-gp { margin-left: auto; }
+  .store img { height: var(--badge); width: auto; display: block; }
   .empty { color: var(--muted); }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -180,6 +178,12 @@
   var lang = pickLang(params.get('lang'));
   var t = TEXT[lang];
 
+  // Бейджи лежат в том виде, в каком их отдают сторы; ratio — ширина к высоте.
+  var BADGE = {
+    gp: { src: 'assets/badges/gp-' + lang + '.webp', ratio: 3.36 },
+    rustore: { src: 'assets/badges/rustore.svg', ratio: 2.775 }
+  };
+
   /*
    * Язык присылает приложение: оно знает системные языки точнее браузера. Без
    * параметра правило то же, что в приложениях: русский где угодно в списке
@@ -201,7 +205,7 @@
    * русскоязычным — оба, остальным — только Google Play.
    */
   function storesFor(app) {
-    var wanted = store ? [store] : (lang === 'ru' ? ['gp', 'rustore'] : ['gp']);
+    var wanted = store ? [store] : (lang === 'ru' ? ['rustore', 'gp'] : ['gp']);
     var res = wanted.filter(function (s) { return app.stores[s]; });
     return res.length ? res : Object.keys(app.stores).slice(0, 1);
   }
@@ -271,8 +275,14 @@
 
     var stores = el('div', 'stores');
     storesFor(app).forEach(function (s) {
-      var link = el('a', 'store', t[s]);
+      var link = el('a', 'store store-' + s);
       link.href = storeUrl(app, s);
+      var badge = el('img');
+      badge.src = BADGE[s].src;
+      badge.alt = t[s];
+      badge.height = 44;
+      badge.width = Math.round(44 * BADGE[s].ratio);
+      link.appendChild(badge);
       link.addEventListener('click', function () {
         track('store_click', { app_id: app.id, store: s });
       });
