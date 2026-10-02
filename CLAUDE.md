@@ -14,7 +14,9 @@ Android-приложений. На неё ведёт пункт меню из к
 
 Статическая страница без сборки. Исходники — в публичном репозитории
 `Sicness/android-pages` на GitHub, хостинг — Firebase Hosting в проекте
-`android-c1827` (сайт `android-c1827.web.app`).
+`android-c1827` (сайт `android-c1827.web.app`). Домен привязан в консоли Firebase;
+в DNS reg.ru запись CNAME `android` → `android-c1827.web.app`. Сертификат HTTPS
+выпускает и продлевает Firebase.
 
 Выкладка вручную после пуша в `main`:
 
@@ -23,7 +25,7 @@ firebase deploy --only hosting
 ```
 
 Что не уходит на хостинг, задаёт `ignore` в `firebase.json`: скрытые файлы и папки
-(в том числе `.git`), `CLAUDE.md`, `README.md`, `CNAME`.
+(в том числе `.git`), `CLAUDE.md`, `README.md`.
 
 - `index.html` — вёрстка, стили и скрипт в одном файле. Внешних ресурсов нет:
   системный шрифт, картинки лежат рядом.
@@ -108,10 +110,6 @@ firebase deploy --only hosting
 - Параметры событий (`app_id`, `store`, `from_app`, `page_lang`, `store_ctx`) не
   зарегистрированы в Google Analytics как пользовательские измерения; без этого
   их нет в отчётах консоли.
-- Домен `android.darklogic.ru` ещё указывает на GitHub Pages. Нужно добавить его
-  в Firebase Hosting и заменить DNS-записи в reg.ru на те, что покажет Firebase.
-  После этого снять домен с GitHub Pages и удалить файл `CNAME`. Без HTTPS ссылку
-  в приложения отдавать нельзя.
 - Пункт меню в МДС сделан, но не выпущен: «Наши приложения» с точкой «новое»,
   адрес и версия списка из Remote Config (`apps_page_url`, `apps_page_version`),
   событие `apps_page_open`. В «Реакции 2 Игрока» пункта нет; у её нерусскоязычных

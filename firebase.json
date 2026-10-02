@@ -7,8 +7,7 @@
       "**/node_modules/**",
       "firebase.json",
       "CLAUDE.md",
-      "README.md",
-      "CNAME"
+      "README.md"
     ],
     "headers": [
       {
