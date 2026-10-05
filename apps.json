@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "apps": [
     {
       "id": "mds",
@@ -19,9 +19,25 @@
       }
     },
     {
+      "id": "ravno",
+      "package": "ru.darklogic.ravno",
+      "priority": 2,
+      "stores": {
+        "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.ravno"
+      },
+      "content": {
+        "ru": {
+          "name": "Ravno: Математический Кроссворд",
+          "tagline": "Уравнения пересекаются, как слова в кроссворде. Найдите недостающие числа.",
+          "description": "Привычный кроссворд, но вместо слов здесь уравнения: строки и столбцы пересекаются на числах. Каждое поле решается рассуждением до конца, угадывать не нужно. Сложность, операции и размер поля выбираете сами, интернет не требуется.",
+          "screenshots": { "count": 5, "width": 720, "height": 1280 }
+        }
+      }
+    },
+    {
       "id": "react2players",
       "package": "ru.darklogic.react2players",
-      "priority": 2,
+      "priority": 3,
       "stores": {
         "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.react2players",
         "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.react2players"
