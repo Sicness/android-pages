@@ -202,12 +202,12 @@
   /*
    * Кнопки сторов. Пришедшим из стора показываем только его: так велят правила
    * Google Play, и человеку не нужен магазин, которого у него нет. Без параметра
-   * русскоязычным — оба, остальным — только Google Play.
+   * русскоязычным — оба, остальным — только Google Play. Приложение, которого
+   * в нужном сторе нет, остаётся без кнопок и в список не попадает.
    */
   function storesFor(app) {
     var wanted = store ? [store] : (lang === 'ru' ? ['rustore', 'gp'] : ['gp']);
-    var res = wanted.filter(function (s) { return app.stores[s]; });
-    return res.length ? res : Object.keys(app.stores).slice(0, 1);
+    return wanted.filter(function (s) { return app.stores[s]; });
   }
 
   function storeUrl(app, s) {
@@ -377,7 +377,7 @@
   function render(data) {
     var list = document.getElementById('list');
     var apps = data.apps.filter(function (app) {
-      return app.content[lang] && app.id !== source;
+      return app.content[lang] && app.id !== source && storesFor(app).length;
     });
     if (!apps.length) {
       list.appendChild(el('p', 'empty', t.empty));
