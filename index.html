@@ -397,12 +397,12 @@
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
-    window.gtag('set', {
+    // Через config, а не set: свои параметры из set в GA4 в события не попадают.
+    window.gtag('config', GA_ID, {
       from_app: source || 'none',
       page_lang: lang,
       store_ctx: store || 'none'
     });
-    window.gtag('config', GA_ID);
     var script = document.createElement('script');
     script.async = true;
     script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
