@@ -21,7 +21,7 @@
     {
       "id": "ravno",
       "package": "ru.darklogic.ravno",
-      "priority": 2,
+      "priority": 3,
       "stores": {
         "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.ravno",
         "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.ravno"
@@ -44,7 +44,7 @@
     {
       "id": "react2players",
       "package": "ru.darklogic.react2players",
-      "priority": 3,
+      "priority": 2,
       "stores": {
         "gp": "https://play.google.com/store/apps/details?id=ru.darklogic.react2players",
         "rustore": "https://www.rustore.ru/catalog/app/ru.darklogic.react2players"
